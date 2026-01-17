@@ -129,19 +129,23 @@ const handleAnswer = (type: Indicator) => {
       )}
 
       {/* 2. 질문 화면 */}
-      {view === 'QUIZ' && (
-        <div className="card">
-          <p className="progress">Q {step + 1} / {questions.length}</p>
-          <h2 className="question-text">{questions[step].q}</h2>
-          <div className="button-group">
-            {questions[step].options.map((option, idx) => (
-              <button key={idx} onClick={() => handleAnswer(option.type)}>
-                {option.text}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      // App.tsx 질문 섹션 부분
+{view === 'QUIZ' && (
+  <div className="card" key={`step-${step}`}> {/* 질문 번호를 key로 주어 카드 전체를 새로 고침 */}
+    <p className="progress">Q {step + 1} / {questions.length}</p>
+    <h2 className="question-text">{questions[step].q}</h2>
+    <div className="button-group">
+      {questions[step].options.map((option, idx) => (
+        <button 
+          key={`btn-${step}-${idx}`} // 질문 번호를 포함한 유니크한 key
+          onClick={() => handleAnswer(option.type)}
+        >
+          {option.text}
+        </button>
+      ))}
+    </div>
+  </div>
+)}
 
       {/* 3. 결과 화면 */}
       {view === 'RESULT' && (
