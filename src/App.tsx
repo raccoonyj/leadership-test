@@ -101,19 +101,21 @@ function App() {
 // App.tsx 내의 handleAnswer 함수
 
 const handleAnswer = (type: Indicator) => {
-  // 1. 현재 클릭된 버튼의 포커스를 강제로 해제 (잔상 방지)
+  // 포커스 해제 (잔상 방지)
   if (document.activeElement instanceof HTMLElement) {
     document.activeElement.blur();
   }
 
-  // 2. 점수 계산 및 단계 이동 로직
-  setScores(prev => ({ ...prev, [type]: prev[type] + 1 }));
+  // 0.2초 정도 기다렸다가 상태를 변경 (클릭 피드백을 볼 시간을 줌)
+  setTimeout(() => {
+    setScores(prev => ({ ...prev, [type]: prev[type] + 1 }));
 
-  if (step < questions.length - 1) {
-    setStep(step + 1);
-  } else {
-    setView('RESULT');
-  }
+    if (step < questions.length - 1) {
+      setStep(step + 1);
+    } else {
+      setView('RESULT');
+    }
+  }, 200); // 200ms = 0.2초
 };
 
   return (
@@ -129,7 +131,6 @@ const handleAnswer = (type: Indicator) => {
       )}
 
       {/* 2. 질문 화면 */}
-      // App.tsx 질문 섹션 부분
 {view === 'QUIZ' && (
   <div className="card" key={`step-${step}`}> {/* 질문 번호를 key로 주어 카드 전체를 새로 고침 */}
     <p className="progress">Q {step + 1} / {questions.length}</p>
