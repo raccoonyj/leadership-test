@@ -100,13 +100,15 @@ function App() {
   };
 // App.tsx 내의 handleAnswer 함수
 
+// App.tsx
+
 const handleAnswer = (type: Indicator) => {
-  // 포커스 해제 (잔상 방지)
   if (document.activeElement instanceof HTMLElement) {
     document.activeElement.blur();
   }
 
-  // 0.2초 정도 기다렸다가 상태를 변경 (클릭 피드백을 볼 시간을 줌)
+  // 0.2초(200)에서 0.35초(350)로 늘려보세요. 
+  // 이 시간이 길어질수록 '깜빡'임이 줄어들고 리드미컬하게 변합니다.
   setTimeout(() => {
     setScores(prev => ({ ...prev, [type]: prev[type] + 1 }));
 
@@ -115,7 +117,7 @@ const handleAnswer = (type: Indicator) => {
     } else {
       setView('RESULT');
     }
-  }, 200); // 200ms = 0.2초
+  }, 350); 
 };
 
   return (
