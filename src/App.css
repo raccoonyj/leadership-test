@@ -73,14 +73,14 @@ button {
 }
 
 /* PC에서만 호버 효과 적용 */
-@media (hover: hover) {
+/* @media (hover: hover) {
   button:hover {
     border-color: #764ba2;
     background-color: #f8f7ff;
     color: #764ba2;
     transform: translateY(-2px);
   }
-}
+} */
 
 /* App.css */
 
