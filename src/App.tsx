@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import './App.css';
 
+// 타입 정의
 type Indicator = 'H' | 'E' | 'A' | 'R' | 'T';
-// 화면 상태를 정의합니다: 'HOME' (시작), 'QUIZ' (진행), 'RESULT' (결과)
 type ViewState = 'HOME' | 'QUIZ' | 'RESULT';
 
 interface Option {
@@ -22,8 +22,7 @@ function App() {
     H: 0, E: 0, A: 0, R: 0, T: 0
   });
 
-  const questions: Question[] = [
-    { // 1번 문제
+  const questions: Question[] = [{ // 1번 문제
       q: "다음 중 부장님의 평소 모습과 더 가까운 선택지를 골라주세요.",
       options: [
         { text: "[정도] 나는 단기성과를 위해 꼼수를 부리지 않고 '정도' 영업(업무)를 지시한다.", type: "H" },
@@ -93,61 +92,61 @@ function App() {
         { text: "[방향제시] 나는 목표 달성을 위해 적극적이고 구체적인 사례와 방향성을 제시한다.", type: "A" }
       ]
     },
-  ];
+];
 
- const handleStart = () => {
+  const handleStart = () => {
     setView('QUIZ');
+    setStep(0);
+    setScores({ H: 0, E: 0, A: 0, R: 0, T: 0 });
   };
 
   const handleAnswer = (type: Indicator) => {
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
-
-    // 1. 먼저 점수를 업데이트합니다. (prev를 사용하여 정확한 상태를 보장)
+    // 1. 점수 즉시 반영
     setScores(prev => ({ ...prev, [type]: prev[type] + 1 }));
 
-    // 2. 부드러운 전환을 위해 지연 시간 후 다음 단계로 이동합니다.
+    // 2. 부드러운 전환을 위해 지연 후 이동
     setTimeout(() => {
-      if (step < questions.length - 1) {
-        setStep(step + 1);
-      } else {
-        setView('RESULT');
-      }
-    }, 350); 
+      setStep(prev => {
+        if (prev < questions.length - 1) {
+          return prev + 1;
+        } else {
+          setView('RESULT');
+          return prev;
+        }
+      });
+    }, 350);
   };
 
-  // '다시 하기' 클릭 시 상태를 명시적으로 초기화하는 함수
   const resetTest = () => {
-    setScores({ H: 0, E: 0, A: 0, R: 0, T: 0 });
-    setStep(0);
     setView('HOME');
-    // 필요한 경우에만 새로고침을 수행하거나, 위 상태 초기화만으로도 충분합니다.
-    // window.location.reload(); 
+    setStep(0);
+    setScores({ H: 0, E: 0, A: 0, R: 0, T: 0 });
   };
 
   return (
     <div className="App">
       {/* 1. 시작 화면 */}
-      {view === 'HOME' && (
-        <div className="card start-card">
-          <h1>리더십 설문조사</h1>
-          <p>부장님께서 생각하시는 본인의 리더십은 어떤 모습일까요?<br/>10개의 질문을 통해 알아보세요.</p>
-          <button className="main-btn" onClick={handleStart}>테스트 시작하기</button>
-        </div>
-      )}
+{view === 'HOME' && (
+  <div className="card start-card">
+    <img 
+      src="/images/hdmf_logo.svg" 
+      alt="로고" 
+      className="intro-logo" 
+    />
+    {/* h2 태그를 유지하되 클래스로 크기 제어 */}
+    <h2 className="main-title">리더십 설문조사</h2>
+    <p>본부장님/단장님께서 생각하시는<br/>본인의 리더십을<br/>10개의 질문을 통해 알아보세요.</p>
+    <button className="main-btn" onClick={handleStart}>시작하기</button>
+  </div>
+)}
 
-      {/* 2. 질문 화면 */}
-      {view === 'QUIZ' && (
-        <div className="card" key={`step-${step}`}>
+      {view === 'QUIZ' && questions[step] && (
+        <div className="card" key={`question-${step}`}>
           <p className="progress">Q {step + 1} / {questions.length}</p>
           <h2 className="question-text">{questions[step].q}</h2>
           <div className="button-group">
             {questions[step].options.map((option, idx) => (
-              <button 
-                key={`btn-${step}-${idx}`}
-                onClick={() => handleAnswer(option.type)}
-              >
+              <button key={`btn-${idx}`} onClick={() => handleAnswer(option.type)}>
                 {option.text}
               </button>
             ))}
@@ -156,23 +155,37 @@ function App() {
       )}
 
       {/* 3. 결과 화면 */}
-      {view === 'RESULT' && (
-        <div className="card result-card">
-          <h2 className="result-type">분석 완료!</h2>
-          <p>아래 결과를 부서원이 한 리더십 설문 결과에 덧그려 주세요.</p>
-          <div className="score-details">
-            <h2>
-              H: {scores.H} <br/>
-              E: {scores.E} <br/>
-              A: {scores.A} <br/>
-              R: {scores.R} <br/>
-              T: {scores.T}
-            </h2>
-          </div>
-          {/* window.location.reload() 대신 resetTest 함수 호출 */}
-          <button className="retry-btn" onClick={resetTest}>다시 하기</button>
-        </div>
-      )}
+{view === 'RESULT' && (
+  <div className="card result-card">
+    <h2 className="result-type">분석 완료!</h2>
+    <p>아래 결과를 본부원이 한 리더십 설문 결과에<br/>덧그려 주세요.</p>
+    
+    <div className="score-container">
+      {[
+        { label: '정도(H)', score: scores.H },
+        { label: '탁월(E)', score: scores.E },
+        { label: '행동(A)', score: scores.A },
+        { label: '존중(R)', score: scores.R },
+        { label: '신뢰(T)', score: scores.T },
+      ].map((item) => (
+        <div key={item.label} className="score-bar-group">
+  <div className="label-text">{item.label}</div> {/* 항목 이름은 위쪽에 */}
+  <div className="bar-flex-container">
+    <div className="bar-background">
+      <div 
+        className="bar-fill" 
+        style={{ width: `${(item.score / 4) * 100}%` }}
+      ></div>
+    </div>
+    <span className="score-number">{item.score}점</span> {/* 숫자는 바 옆에 */}
+  </div>
+</div>
+      ))}
+    </div>
+
+    <button className="retry-btn" onClick={resetTest}>다시 하기</button>
+  </div>
+)}
     </div>
   );
 }
