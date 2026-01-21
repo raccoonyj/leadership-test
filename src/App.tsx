@@ -135,7 +135,7 @@ function App() {
     />
     {/* h2 태그를 유지하되 클래스로 크기 제어 */}
     <h2 className="main-title">리더십 설문조사</h2>
-    <p>본부장님/단장님께서 생각하시는<br/>본인의 리더십을<br/>10개의 질문을 통해 알아보세요.</p>
+    <p>부장님께서 생각하시는<br/>본인의 리더십을<br/>10개의 질문을 통해 알아보세요.</p>
     <button className="main-btn" onClick={handleStart}>시작하기</button>
   </div>
 )}
@@ -158,7 +158,7 @@ function App() {
 {view === 'RESULT' && (
   <div className="card result-card">
     <h2 className="result-type">분석 완료!</h2>
-    <p>아래 결과를 본부원이 한 리더십 설문 결과에<br/>덧그려 주세요.</p>
+    <p>아래 결과를 부서원이 한 리더십 설문 결과에<br/>덧그려 주세요.</p>
     
     <div className="score-container">
       {[
